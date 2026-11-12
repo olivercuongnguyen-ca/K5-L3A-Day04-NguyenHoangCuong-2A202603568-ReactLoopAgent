@@ -33,14 +33,18 @@ Nguyên nhân có thể: model gọi song song mọi thứ ở step 1 vì các I
 
 | Chỉ số | `eval_before.json` | `eval_after.json` |
 |---|---|---|
-| Điểm tổng |  |  |
-| Điểm case đã chọn |  |  |
-| Số model calls |  |  |
-| Token, chi phí nếu có |  |  |
+| Điểm tổng | 84.36 | 88.18 |
+| Điểm case đã chọn (H1) | 60 | 89 |
+| Số model calls | 56 | 60 |
+| Token, chi phí nếu có | 141.918 token (agent) | 171.616 token (agent) |
 
-- Lỗi đã giải quyết:
-- Lỗi còn lại hoặc mới xuất hiện:
+Cùng `config` ở hai file: openai / gpt-5-nano, judge gpt-5-nano, max_steps 8, dataset core. Chi phí tiền không tính (provider không trả giá).
+
+- Lỗi đã giải quyết: H1. Trace lần 2 có `validation_unfollowed_link` ở step 2 với `xr3myzj7ms51`; agent gọi `get_incident_details` cho incident đó ở step 3 (tool call ở 2 model step khác nhau, hết vi phạm cơ học) rồi trả lời với nguyên nhân/ảnh hưởng từng bên. H1 từ 60 lên 89. Kiểm tra này cũng kích hoạt ở H6 (điểm không đổi, 91).
+- Lỗi còn lại hoặc mới xuất hiện: A5 (76) và H4 (76), H8 (74), H7 (74) vẫn thấp. Một số case giảm: A4 98->89, E6 92->84, A2 92->86, A7 92->87. Đổi lại chi phí: +4 model calls và +29.698 token, phần lớn từ H1/H6 phải gọi lại và các case có `validation_missing_source` (E3, A7).
 
 ## 5. Giới hạn
 
-Nêu giới hạn của điểm judge, của snapshot và của việc chỉ chạy một lần mỗi phiên bản.
+- Điểm judge là ước lượng do chính gpt-5-nano chấm nên có thể thiên lệch; một số lệch điểm (ví dụ A4 98->89) có thể do judge chứ không do agent.
+- Chỉ chạy một lần mỗi phiên bản. Nhiều case tăng/giảm mà không có thay đổi hành vi nào liên quan: H3 50->93 và H7 48->74 không có event validation nào trong trace, tức là cải thiện đến từ biến động của model chứ không phải từ thay đổi của agent. Vì vậy mức tăng 84.36->88.18 không thể gán toàn bộ cho thay đổi; chỉ H1 (và H6) có bằng chứng trace trực tiếp.
+- Snapshot cố định và chỉ có 50 incident gần nhất, nên không đánh giá được dữ liệu ngoài phạm vi đó. Thay đổi chỉ nhận link dạng `/incidents/<id>` và chưa xử lý dữ liệu bị cắt (`truncated`).

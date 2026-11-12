@@ -27,7 +27,8 @@ Nguyên nhân có thể: model gọi song song mọi thứ ở step 1 vì các I
 
 ## 3. Thay đổi đã thực hiện
 
-- Sửa gì, ở đâu: Trong `agent.py`, thêm `linked_incident_ids` (tìm `/incidents/<id>` trong body các update của incident đọc thành công) và theo dõi `pending` (được dẫn tới) so với `fetched` (đã đọc chi tiết). Khi model đưa final answer mà còn incident được dẫn tới nhưng chưa đọc, ghi event `validation_unfollowed_link` vào trace và nhắc model gọi `get_incident_details` cho các ID đó rồi trả lời lại. Chỉ nhắc một lần và chỉ khi còn lượt trong `max_steps`.- Vì sao chọn thay đổi này: cùng kiểu với kiểm tra URL nguồn ở Bài 4 (kiểm tra bằng code, không dựa vào prompt), nhắm đúng lỗi H1/H6 "gọi tiếp khi thấy incident liên quan". Giới hạn: chỉ nhận link dạng `/incidents/<id>` và dùng provider của incident chứa link; chưa xử lý nhắc về dữ liệu bị cắt (`truncated`).
+- Sửa gì, ở đâu: Trong `agent.py`, thêm `linked_incident_ids` (tìm `/incidents/<id>` trong body các update của incident đọc thành công) và theo dõi `pending` (được dẫn tới) so với `fetched` (đã đọc chi tiết). Khi model đưa final answer mà còn incident được dẫn tới nhưng chưa đọc, ghi event `validation_unfollowed_link` vào trace và nhắc model gọi `get_incident_details` cho các ID đó rồi trả lời lại. Chỉ nhắc một lần và chỉ khi còn lượt trong `max_steps`.
+- Vì sao chọn thay đổi này: cùng kiểu với kiểm tra URL nguồn ở Bài 4 (kiểm tra bằng code, không dựa vào prompt), nhắm đúng lỗi H1/H6 "gọi tiếp khi thấy incident liên quan". Giới hạn: chỉ nhận link dạng `/incidents/<id>` và dùng provider của incident chứa link; chưa xử lý nhắc về dữ liệu bị cắt (`truncated`).
 
 ## 4. So sánh hai lần chạy
 
